@@ -1,8 +1,8 @@
 class PagesController < ApplicationController
   def home
-    @cities, @city_coord, @coordinates = convert_coordinates()
+    @cities, @cityCoords, @cityMappings = convert_coordinates()
     gon.cities = @cities
-    gon.city_coord = @city_coord
-    gon.coordinates = @coordinates
+    gon.cityCoords = @cityCoords
+    gon.cityMappings = @cityMappings
   end
 end

@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
     link_count = 0
     userLocations = []
     Yajl::Parser.parse(js) do |event|
-      if link_count == 5
+      if link_count == 100
         break
       end
 
@@ -80,7 +80,7 @@ class ApplicationController < ActionController::Base
     nameAndCoordinates = []
     array.each do |location|
       # location.strip!
-      print "THE LOCATION ---- ", location, "\n\n"
+      # print "THE LOCATION ---- ", location, "\n\n"
       search = Geocoder.search("#{location}")
       search.each do |place|
         begin
@@ -105,15 +105,17 @@ class ApplicationController < ActionController::Base
     # File.open("cities.txt", "w")
     # File.open("coordinates.txt", "w")
     userLocations = find_users()
-    print "THE STUIPD ACTUAL FUCKING USER LOCATION: ", userLocations, "\n\n\n"
+    fixedLocations = []
+    # print "THE STUIPD ACTUAL FUCKING USER LOCATION: ", userLocations, "\n\n\n"
     userLocations.each do |line|
-      print "USER LOCATIONS IN CREATE: ", line, "\n\n\n"
+      # print "USER LOCATIONS IN CREATE: ", line, "\n\n\n"
+      # puts "USER LOCATIONS IN CREATE: #{line} \n\n\n"
       pusher = line[0]
       owner = line[1]
       pusher = pusher.split(", ")
       owner = owner.split(", ")
-      print "PUSHER: ", pusher, "\n"
-      print "OWNER: ", owner, "\n\n"
+      # print "PUSHER: ", pusher, "\n"
+      # print "OWNER: ", owner, "\n\n"
       pusher_coordinates = find_locations(pusher)
       owner_coordinates = find_locations(owner)
       pusher_coordinates.each do |x|
@@ -121,7 +123,7 @@ class ApplicationController < ActionController::Base
           if x[0].downcase == y[0].downcase
             next
           else
-            userLocations << [x, y]
+            fixedLocations << [x, y]
             # File.open("cities.txt", "a") do |f|
             #   f.write("#{x[0]}, #{y[0]}\n")
             # end
@@ -134,14 +136,14 @@ class ApplicationController < ActionController::Base
         end
       end
     end
-    return userLocations
+    return fixedLocations
   end
 
   def convert_coordinates()
     # file = File.open("coordinates.txt", "r")
     cities = Hash.new
-    city_coord = Hash.new
-    coordinates = Hash.new
+    cityCoords = Hash.new
+    cityMappings = Hash.new
     locations = create_locations()
     locations.each do |line|
       from = line[0]
@@ -155,14 +157,14 @@ class ApplicationController < ActionController::Base
       to_longitude = to[1]["lng"]
       to_coordinates = {"lat" => to_latitude, "lng" => to_longitude}
       # print "FROM LOCATION: ", from, " TO LOCATION: ", to, "\n\n"
-      print "FROM LOCATION NAME: ", from_name, " TO LOCATION NAME: ", to_name, "\n\n"
+      # print "FROM LOCATION NAME: ", from_name, " TO LOCATION NAME: ", to_name, "\n\n"
 
-      if city_coord[from_name].nil? 
-        city_coord[from_name] = from_coordinates
+      if cityCoords[from_name].nil? 
+        cityCoords[from_name] = from_coordinates
       end
 
-      if city_coord[to_name].nil?
-        city_coord[to_name] = to_coordinates
+      if cityCoords[to_name].nil?
+        cityCoords[to_name] = to_coordinates
       end
 
       if cities[from_name].nil?
@@ -175,13 +177,16 @@ class ApplicationController < ActionController::Base
       else
         cities[to_name] = cities[to_name] + 1
       end
-      fromAndToCoordinates = [from_coordinates, to_coordinates]
-      if coordinates[fromAndToCoordinates].nil?
-        coordinates[fromAndToCoordinates] = 1
+      fromAndToCoordinates = [from_name, to_name]
+      if cityMappings[fromAndToCoordinates].nil?
+        cityMappings[fromAndToCoordinates] = 1
       else
-        coordinates[fromAndToCoordinates] = coordinates[fromAndToCoordinates] + 1
+        cityMappings[fromAndToCoordinates] = cityMappings[fromAndToCoordinates] + 1
       end
     end
-    return cities.to_json, city_coord.to_json, coordinates.to_json
+    # print "CITY JSON: ", cities.to_json, "\n"
+    # print "CITY COORD JSON ", cityCoords.to_json, "\n"
+    # print "COORDINATES JSON ", cityMappings.to_json, "\n"
+    return cities.to_json, cityCoords.to_json, cityMappings.to_json
   end
 end
