@@ -19,6 +19,24 @@ ActiveRecord::Schema.define(:version => 20130422025330) do
     t.integer  "lng"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+
+  create_table "parsers", :force => true do |t|
+    t.string   "parser_type"
+    t.string   "event_type"
+    t.string   "date"
+    t.string   "base_uri",    :default => "http://data.githubarchive.org/"
+    t.datetime "created_at",                                                :null => false
+    t.datetime "updated_at",                                                :null => false
+  end
+
+  create_table "results", :force => true do |t|
+    t.string   "date"
+    t.integer  "hour"
+    t.string   "language"
+    t.integer  "count"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+    t.string   "query"
   end
 
 end

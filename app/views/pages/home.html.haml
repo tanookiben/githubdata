@@ -1,0 +1,18 @@
+%h1 Home
+
+= form_tag parse_path, :class => "form-horizontal" do
+	.control-group
+		= label_tag "date", "Date", :class => "control-label"
+		.controls
+			= text_field_tag "date", "2013-04-01-12"
+	.control-group
+		= label_tag "event", "Event Type", :class => "control-label"
+		.controls
+			= text_field_tag "event", "PushEvent"
+	.control-group
+		= label_tag "parser", "Parser Type", :class => "control-label"
+		.controls
+			= text_field_tag "parser", "Languages_by_hour"
+	.control-group
+		.controls
+			= submit_tag "Submit", :class => "btn btn-warning"

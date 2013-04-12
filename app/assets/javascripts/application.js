@@ -13,3 +13,6 @@
 //= require jquery
 //= require jquery_ujs
 //= require_tree .
+//= require skrollr
+//= require twitter/bootstrap
+//= require d3
