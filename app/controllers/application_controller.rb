@@ -9,11 +9,11 @@ class ApplicationController < ActionController::Base
     return true
   end
 
-  def initialize()
+  def find_events()
     require 'yajl'
     require 'zlib'
     require 'open-uri'
-    client = Octokit::Client.new(:login => "sicophrenic", :password => ")blzzrd12!(")
+    client = Octokit::Client.new(:login => USERNAME, :password => PASSWORD)
     gz = open('http://data.githubarchive.org/2013-04-08-23.json.gz')
     js = Zlib::GzipReader.new(gz).read
 
@@ -100,7 +100,7 @@ class ApplicationController < ActionController::Base
   def create_locations()
     # File.open("cities.txt", "w")
     # File.open("coordinates.txt", "w")
-    locations = []
+    userLocations = find_events()
     userLocations = check_user("sicophrenic")
     userLocations do |line|
       pusher = line[0]
