@@ -80,7 +80,7 @@ class ApplicationController < ActionController::Base
     nameAndCoordinates = []
     array.each do |location|
       # location.strip!
-      # print "THE LOCATION ---- ", location, "\n\n"
+      print "THE LOCATION ---- ", location, "\n\n"
       search = Geocoder.search("#{location}")
       search.each do |place|
         begin
@@ -89,6 +89,7 @@ class ApplicationController < ActionController::Base
             name = place.data["address_components"][0]["long_name"]
             coordinates = place.geometry["location"]
             nameAndCoordinates << [name, coordinates]
+            break
           else
             next
           end
@@ -104,17 +105,20 @@ class ApplicationController < ActionController::Base
     # File.open("cities.txt", "w")
     # File.open("coordinates.txt", "w")
     userLocations = find_users()
+    print "THE STUIPD ACTUAL FUCKING USER LOCATION: ", userLocations, "\n\n\n"
     userLocations.each do |line|
-      # print "USER LOCATIONS IN CREATE: ", line, "\n\n\n"
+      print "USER LOCATIONS IN CREATE: ", line, "\n\n\n"
       pusher = line[0]
       owner = line[1]
       pusher = pusher.split(", ")
       owner = owner.split(", ")
+      print "PUSHER: ", pusher, "\n"
+      print "OWNER: ", owner, "\n\n"
       pusher_coordinates = find_locations(pusher)
       owner_coordinates = find_locations(owner)
       pusher_coordinates.each do |x|
         owner_coordinates.each do |y|
-          if x[0] == y[0]
+          if x[0].downcase == y[0].downcase
             next
           else
             userLocations << [x, y]
@@ -150,6 +154,8 @@ class ApplicationController < ActionController::Base
       to_latitude = to[1]["lat"]
       to_longitude = to[1]["lng"]
       to_coordinates = {"lat" => to_latitude, "lng" => to_longitude}
+      # print "FROM LOCATION: ", from, " TO LOCATION: ", to, "\n\n"
+      print "FROM LOCATION NAME: ", from_name, " TO LOCATION NAME: ", to_name, "\n\n"
 
       if city_coord[from_name].nil? 
         city_coord[from_name] = from_coordinates
