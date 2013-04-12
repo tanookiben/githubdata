@@ -25,15 +25,6 @@ class PagesController < ApplicationController
   			:event_type => params[:event])
   	end
 
-    @query = "#{@date}|||||#{@parser.parser_type}|||||#{@parser.event_type}"
-
-    Results.all.each do |result|
-      if result.query == @query
-        @lang_hours = process_results(@query)
-        return
-      end
-    end
-
 
   	@dataset = []
 
@@ -50,6 +41,15 @@ class PagesController < ApplicationController
   			:month => @date[1],
   			:day => @date[2]}
   	end
+
+    @query = "#{@date}|||||#{@parser.parser_type}|||||#{@parser.event_type}"
+
+    Results.all.each do |result|
+      if result.query == @query
+        @lang_hours = process_results(@query)
+        return
+      end
+    end
 
     if @date[:hour]
       @dataset << "#{@parser.base_uri}#{@date[:year]}-#{@date[:month]}-#{@date[:day]}-#{@date[:hour]}.json.gz"
