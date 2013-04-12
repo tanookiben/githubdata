@@ -1,5 +1,7 @@
-function create(test) {
-  console.log(test)
+function create() {
+  console.log(gon.cities);
+  console.log(gon.city_coord);
+  console.log(gon.coordinates);
   var myLatLng = new google.maps.LatLng(0, -180);
   var mapOptions = {
     zoom: 3,

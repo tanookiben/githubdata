@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
   def check_user(username)
+    client = Octokit::Client.new(:login => USERNAME, :password => PASSWORD)
     begin
       check = client.user(username)
     rescue
@@ -9,7 +10,7 @@ class ApplicationController < ActionController::Base
     return true
   end
 
-  def find_events()
+  def find_users()
     require 'yajl'
     require 'zlib'
     require 'open-uri'
@@ -64,6 +65,7 @@ class ApplicationController < ActionController::Base
         #   f.write("#{actor_location}:#{owner_location}\n")
         # end
         # locations << ":#{actor_location}|#{owner_location}"
+        # print "ACTOR LOCATION, ", actor_location, " ------- OWNER LOCATION, ", owner_location, "\n\n"
         userLocations << [actor_location, owner_location]
         link_count += 1
       rescue
@@ -78,6 +80,7 @@ class ApplicationController < ActionController::Base
     nameAndCoordinates = []
     array.each do |location|
       # location.strip!
+      # print "THE LOCATION ---- ", location, "\n\n"
       search = Geocoder.search("#{location}")
       search.each do |place|
         begin
@@ -100,15 +103,15 @@ class ApplicationController < ActionController::Base
   def create_locations()
     # File.open("cities.txt", "w")
     # File.open("coordinates.txt", "w")
-    userLocations = find_events()
-    userLocations = check_user("sicophrenic")
-    userLocations do |line|
+    userLocations = find_users()
+    userLocations.each do |line|
+      # print "USER LOCATIONS IN CREATE: ", line, "\n\n\n"
       pusher = line[0]
       owner = line[1]
       pusher = pusher.split(", ")
       owner = owner.split(", ")
-      pusher_coordinates = find_coordinates(pusher)
-      owner_coordinates = find_coordinates(owner)
+      pusher_coordinates = find_locations(pusher)
+      owner_coordinates = find_locations(owner)
       pusher_coordinates.each do |x|
         owner_coordinates.each do |y|
           if x[0] == y[0]
@@ -127,7 +130,7 @@ class ApplicationController < ActionController::Base
         end
       end
     end
-    # return userLocations
+    return userLocations
   end
 
   def convert_coordinates()

@@ -4,6 +4,7 @@ gem 'rails', '3.2.13'
 gem 'geocoder'
 gem 'octokit'
 gem 'yajl-ruby'
+gem 'gon'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
