@@ -14,6 +14,7 @@ class PagesController < ApplicationController
   end
 
   def parse
+    start_method = Time.now
     @parser = create_parser(params[:date], params[:parser], params[:event])
 
   	@date = parse_date(params[:date])
@@ -34,7 +35,7 @@ class PagesController < ApplicationController
     	@push_event_count = 0
     	@lang_hours = {}
 
-    	start = Time.now
+    	start_query = Time.now
 
     	require 'open-uri'
     	require 'zlib'
@@ -84,16 +85,22 @@ class PagesController < ApplicationController
     		end
     	end
 
-      finish = Time.now
-      puts "Languages by hour took #{finish-start} seconds for #{@push_event_count} events."
+      finish_query = Time.now
+      puts "Languages by hour took #{finish_query-start_query} seconds for #{@push_event_count} events."
     end
 
     # @lang_hours = filter_count(@lang_hours, 100)
-    @languages = ["Ruby", "Java", "C", "PHP", "Python"]
+    @languages = ["Ruby"] #, "Java", "C", "PHP", "Python"]
     @lang_hours = filter_languages(@lang_hours, @languages)
+
+    require 'pp'
+    pp @lang_hours
 
     @lang_hours = normalize_values(@lang_hours)
     @unique_languages = count_languages(@lang_hours)
+
+    finish_method = TIme.now
+    puts "Parsing took #{finish_method-start_method} seconds to parse events."
   end
 
   private
@@ -120,6 +127,9 @@ class PagesController < ApplicationController
               lang_max = cnt
             end
           end
+        end
+        puts "Lang #{sel_lang} max is #{lang_max}."
+        results.each do |hour, lang_hash|
           lang_hash.each do |lang, cnt|
             if lang == sel_lang
               lang_hash[lang] = cnt.to_f / lang_max.to_f
@@ -145,7 +155,8 @@ class PagesController < ApplicationController
     def process_results(query)
       @return = {}
 
-      Results.all.each do |result|
+      results = Results.find_all_by_query(@query)
+      results.each do |result|
         if @return[result.hour].nil?
           @return[result.hour] = {}
           @return[result.hour][result.language] = result.count
