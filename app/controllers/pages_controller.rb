@@ -54,6 +54,7 @@ class PagesController < ApplicationController
     			end
 
     			hour = DateTime.strptime(event["created_at"]).hour
+          puts "Event at hour: #{hour}"
 
     			if event["repository"].nil? || event["repository"].empty?
     				next
