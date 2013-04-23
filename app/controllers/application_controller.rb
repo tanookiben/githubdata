@@ -1,21 +1,12 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
-  def check_user(username)
-    client = Octokit::Client.new(:login => USERNAME, :password => PASSWORD)
-    begin
-      check = client.user(username)
-    rescue
-      return false
-    end
-    return true
-  end
 
   def find_users()
     require 'yajl'
     require 'zlib'
     require 'open-uri'
     client = Octokit::Client.new(:login => USERNAME, :password => PASSWORD)
-    gz = open('http://data.githubarchive.org/2013-04-08-23.json.gz')
+    gz = open('http://data.githubarchive.org/2013-04-08-12.json.gz')
     js = Zlib::GzipReader.new(gz).read
 
     locations = ""
@@ -23,20 +14,11 @@ class ApplicationController < ActionController::Base
     link_count = 0
     userLocations = []
     Yajl::Parser.parse(js) do |event|
-      if link_count == 100
-        break
-      end
-
       if event["type"] != "PushEvent"
-        # puts "|"
         next
-      else
-        push_event_count += 1
-        # puts "."
       end
 
       actor = event["actor_attributes"]["login"]
-
       repository = event["repository"]
       owner = repository["owner"]
 
@@ -45,12 +27,11 @@ class ApplicationController < ActionController::Base
       end
 
       actor_location = event["actor_attributes"]["location"]
-
       if actor_location.nil? || actor_location == ""
         next
       end
-      
       begin
+        puts owner
         owner_location = client.user(owner).location
 
         if owner_location.nil? || owner_location == ""
@@ -60,11 +41,6 @@ class ApplicationController < ActionController::Base
         if actor_location.downcase == owner_location.downcase
           next
         end
-
-        # File.open("location.txt", "a") do |f|
-        #   f.write("#{actor_location}:#{owner_location}\n")
-        # end
-        # locations << ":#{actor_location}|#{owner_location}"
         # print "ACTOR LOCATION, ", actor_location, " ------- OWNER LOCATION, ", owner_location, "\n\n"
         userLocations << [actor_location, owner_location]
         link_count += 1
@@ -79,37 +55,44 @@ class ApplicationController < ActionController::Base
     #creates [name, Hash{lat => #, lng => #}]
     nameAndCoordinates = []
     array.each do |location|
-      # location.strip!
-      # print "THE LOCATION ---- ", location, "\n\n"
-      search = Geocoder.search("#{location}")
-      search.each do |place|
-        begin
-          type = place.data["address_components"][0]["types"][0]
-          if type == "locality"
-            name = place.data["address_components"][0]["long_name"]
-            coordinates = place.geometry["location"]
-            nameAndCoordinates << [name, coordinates]
-            break
-          else
-            next
+      if Rails.env == "production"
+        city = City.find(:all, conditions: ["name ILIKE ?", "#{location}"])
+      else
+        city = City.find(:all, conditions: ["name LIKE ?", "#{location}"])
+      end
+      if city.empty?
+        search = Geocoder.search("#{location}")
+        search.each do |place|
+          begin
+            type = place.data["address_components"][0]["types"][0]
+            if type == "locality"
+              name = place.data["address_components"][0]["long_name"]
+              coordinates = place.geometry["location"]
+              nameAndCoordinates << [name, coordinates]
+              City.create(name: name, lat: coordinates["lat"], lng: coordinates["lng"])
+              break
+            else
+              next
+            end
+          rescue
+            puts "ERROR ERROR ERROR ERROR ERROR"
           end
-        rescue
-          puts "ERROR ERROR ERROR ERROR ERROR"
         end
+      else
+        name = city.first.name
+        coordinates = {"lat" => city.first.lat, "lng" => city.first.lng}
+        nameAndCoordinates << [name, coordinates]
+        break
       end
     end
     return nameAndCoordinates
   end
 
   def create_locations()
-    # File.open("cities.txt", "w")
-    # File.open("coordinates.txt", "w")
     userLocations = find_users()
     fixedLocations = []
-    # print "THE STUIPD ACTUAL FUCKING USER LOCATION: ", userLocations, "\n\n\n"
     userLocations.each do |line|
       # print "USER LOCATIONS IN CREATE: ", line, "\n\n\n"
-      # puts "USER LOCATIONS IN CREATE: #{line} \n\n\n"
       pusher = line[0]
       owner = line[1]
       pusher = pusher.split(", ")
@@ -124,14 +107,6 @@ class ApplicationController < ActionController::Base
             next
           else
             fixedLocations << [x, y]
-            # File.open("cities.txt", "a") do |f|
-            #   f.write("#{x[0]}, #{y[0]}\n")
-            # end
-            # File.open("coordinates.txt", "a") do |f|
-            #   #from:to
-            #   #lat,lng:lat,lng
-            #   f.write("#{x[1]["lat"]},#{x[1]["lng"]}:#{y[1]["lat"]},#{y[1]["lng"]}\n")
-            # end
           end
         end
       end

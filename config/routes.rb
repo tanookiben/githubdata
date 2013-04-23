@@ -1,5 +1,6 @@
 Githubdata::Application.routes.draw do
   root to: "pages#home"
+  resources :cities
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
