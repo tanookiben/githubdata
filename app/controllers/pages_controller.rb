@@ -93,11 +93,8 @@ class PagesController < ApplicationController
     @languages = ["Ruby"] #, "Java", "C", "PHP", "Python"]
     @lang_hours = filter_languages(@lang_hours, @languages)
 
-    require 'pp'
-    pp @lang_hours
-
     @lang_hours = normalize_values(@lang_hours)
-    @unique_languages = count_languages(@lang_hours)
+    # @unique_languages = count_languages(@lang_hours)
 
     finish_method = TIme.now
     puts "Parsing took #{finish_method-start_method} seconds to parse events."
