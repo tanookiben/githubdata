@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
 
   def find_users()
+    puts "-----start find_users()-----"
     require 'yajl'
     require 'zlib'
     require 'open-uri'
@@ -48,10 +49,12 @@ class ApplicationController < ActionController::Base
         puts "error"
       end
     end
+    puts "-----end find_users()-----"
     return userLocations
   end
 
   def find_locations(array)
+    puts "-----start find_locations()-----"
     #creates [name, Hash{lat => #, lng => #}]
     nameAndCoordinates = []
     array.each do |location|
@@ -85,10 +88,12 @@ class ApplicationController < ActionController::Base
         break
       end
     end
+    puts "-----end find_locations()-----"
     return nameAndCoordinates
   end
 
   def create_locations()
+    puts "-----start create_locations()-----"
     userLocations = find_users()
     fixedLocations = []
     userLocations.each do |line|
@@ -111,10 +116,12 @@ class ApplicationController < ActionController::Base
         end
       end
     end
+    puts "-----end create_locations()-----"
     return fixedLocations
   end
 
   def convert_coordinates()
+    puts "-----start convert_coordinates()-----"
     # file = File.open("coordinates.txt", "r")
     cities = Hash.new
     cityCoords = Hash.new
@@ -162,6 +169,7 @@ class ApplicationController < ActionController::Base
     # print "CITY JSON: ", cities.to_json, "\n"
     # print "CITY COORD JSON ", cityCoords.to_json, "\n"
     # print "COORDINATES JSON ", cityMappings.to_json, "\n"
+    puts "-----end convert_coordinates()-----"
     return cities.to_json, cityCoords.to_json, cityMappings.to_json
   end
 end
