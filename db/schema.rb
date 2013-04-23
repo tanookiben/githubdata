@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(:version => 20130422025330) do
     t.integer  "lng"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
 
   create_table "parsers", :force => true do |t|
     t.string   "parser_type"

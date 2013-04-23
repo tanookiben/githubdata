@@ -12,7 +12,11 @@ Githubdata::Application.routes.draw do
   #   match 'products/:id/purchase' => 'catalog#purchase', :as => :purchase
   # This route can be invoked with purchase_url(:id => product.id)
   match '/demo', :to => 'pages#demo'
-  match '/parse', :to => 'pages#parse', :as => "parse", :via => :post
+
+  match '/visualization', :to => 'pages#visualization', :as => 'visualization', :via => :post
+
+  match '/times', :to => 'times#show', :as => 'times'
+  match '/locations', :to => 'locations#show', :as => 'locations'
 
   # Sample resource route (maps HTTP verbs to controller actions automatically):
   #   resources :products

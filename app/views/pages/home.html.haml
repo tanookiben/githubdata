@@ -1,6 +1,6 @@
 %h1 Home
 
-= form_tag parse_path, :class => "form-horizontal" do
+= form_tag visualization_path, :class => "form-horizontal" do
 	.control-group
 		= label_tag "date", "Date", :class => "control-label"
 		.controls
@@ -10,9 +10,9 @@
 		.controls
 			= text_field_tag "event", "PushEvent"
 	.control-group
-		= label_tag "parser", "Parser Type", :class => "control-label"
+		= label_tag "visualization", "Visualizaiton", :class => "control-label"
 		.controls
-			= text_field_tag "parser", "Languages_by_hour"
+			= select_tag "visualization", "<option value='' disabled selected style='display:none;'>Select Visualization</option><option value=\"times\">Times</option><option value=\"locations\">Locations</option>".html_safe
 	.control-group
 		.controls
 			= submit_tag "Submit", :class => "btn btn-warning"

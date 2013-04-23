@@ -1,0 +1,33 @@
+%h1 Locations
+
+= init_skrollr
+
+.chart-row
+	- @languages.each do |lang|
+		.language.span1
+			#{lang}
+			.bar{ :id => "lang-bar",
+						"data-0" => "transform:scale(1,#{@lang_hours[0][lang]})",
+						"data-200" => "transform:scale(1,#{@lang_hours[1][lang]})",
+						"data-400" => "transform:scale(1,#{@lang_hours[2][lang]})",
+						"data-600" => "transform:scale(1,#{@lang_hours[3][lang]})",
+						"data-800" => "transform:scale(1,#{@lang_hours[4][lang]})",
+						"data-1000" => "transform:scale(1,#{@lang_hours[5][lang]})",
+						"data-1200" => "transform:scale(1,#{@lang_hours[6][lang]})",
+						"data-1400" => "transform:scale(1,#{@lang_hours[7][lang]})",
+						"data-1600" => "transform:scale(1,#{@lang_hours[8][lang]})",
+						"data-1800" => "transform:scale(1,#{@lang_hours[9][lang]})",
+						"data-2000" => "transform:scale(1,#{@lang_hours[10][lang]})",
+						"data-2200" => "transform:scale(1,#{@lang_hours[11][lang]})",
+						"data-2200" => "transform:scale(1,#{@lang_hours[12][lang]})",
+						"data-2400" => "transform:scale(1,#{@lang_hours[13][lang]})",
+						"data-2600" => "transform:scale(1,#{@lang_hours[14][lang]})",
+						"data-2800" => "transform:scale(1,#{@lang_hours[15][lang]})",
+						"data-3000" => "transform:scale(1,#{@lang_hours[16][lang]})",
+						"data-3200" => "transform:scale(1,#{@lang_hours[17][lang]})",
+						"data-3400" => "transform:scale(1,#{@lang_hours[18][lang]})",
+						"data-3600" => "transform:scale(1,#{@lang_hours[19][lang]})",
+						"data-3800" => "transform:scale(1,#{@lang_hours[20][lang]})",
+						"data-4000" => "transform:scale(1,#{@lang_hours[21][lang]})",
+						"data-4200" => "transform:scale(1,#{@lang_hours[22][lang]})",
+						"data-4400" => "transform:scale(1,#{@lang_hours[23][lang]})" }
