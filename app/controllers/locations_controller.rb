@@ -1,7 +1,7 @@
 class LocationsController < ApplicationController
 
   def show
-  	@date = session[:date]
+  	@date = parse_date(session[:date])
 
     # @cities, @cityCoords, @cityMappings = convert_coordinates()
     convert_coordinates
@@ -13,8 +13,10 @@ class LocationsController < ApplicationController
 
   private
     def find_users()
-    	start_time = Time.now
+    	start = Time.now
       puts "-----start find_users()-----"
+
+      octokit_setup
 
       require 'yajl'
       require 'zlib'
@@ -70,6 +72,7 @@ class LocationsController < ApplicationController
 	          puts "Octokit error"
 	        end
 	      end
+      end
 
       puts "-----end find_users()-----"
       finish = Time.now
@@ -78,7 +81,9 @@ class LocationsController < ApplicationController
 
     def find_location(locations)
     	start = Time.now
-      puts "-----start find_locations()-----"
+      # puts "-----start find_locations()-----"
+
+      location_found = []
 
       #creates [name, Hash{lat => #, lng => #}]
       locations.each do |location|
@@ -93,31 +98,32 @@ class LocationsController < ApplicationController
                 coordinates = place.geometry["location"]
                 location_found = [name, coordinates]
                 City.create(name: name, lat: coordinates["lat"], lng: coordinates["lng"])
+                puts "created city #{name}"
                 break
               else
                 next
               end
             rescue
-              puts "ERROR ERROR ERROR ERROR ERROR"
+              puts "Geocoder search error"
             end
           end
         else
-          name = city.first.name
-          coordinates = {"lat" => city.first.lat, "lng" => city.first.lng}
+          name = city.name
+          coordinates = {"lat" => city.lat, "lng" => city.lng}
           location_found = [name, coordinates]
           break
         end
       end
 
-      puts "-----end find_locations()-----"
-      finish = Time.now
-      puts "find_locations() took #{finish-start} seconds."
+      # puts "-----end find_locations()-----"
+      # finish = Time.now
+      # puts "find_locations() took #{finish-start} seconds."
       return location_found
     end
 
     def create_locations()
     	start = Time.now
-      puts "-----start create_locations()-----"
+      # puts "-----start create_locations()-----"
 
       # userLocations = find_users()
       find_users # set up @user_locations
@@ -134,7 +140,7 @@ class LocationsController < ApplicationController
         pusher_coordinates = find_location(pusher_locations)
         owner_coordinates = find_location(owner_locations)
 
-        if pusher_coordinates == "" || owner_coordinates == ""
+        if pusher_coordinates == [] || owner_coordinates == []
         	next # location not found
         end
         if pusher_coordinates[0].downcase == owner_coordinates[0].downcase
@@ -144,9 +150,9 @@ class LocationsController < ApplicationController
         @found_locations << [pusher_coordinates, owner_coordinates]
       end
 
-      puts "-----end create_locations()-----"
-      finish = Time.now
-      puts "create_locations() took #{finish-start} seconds."
+      # puts "-----end create_locations()-----"
+      # finish = Time.now
+      # puts "create_locations() took #{finish-start} seconds."
     end
 
     def convert_coordinates()

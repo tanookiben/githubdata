@@ -159,23 +159,6 @@ class TimesController < ApplicationController
       @gen_date
     end
 
-    def parse_date(date_field)
-      @split_date = date_field.split('-')
-      if @split_date.length == 4
-        @split_date = {
-          :year => @split_date[0],
-          :month => @split_date[1],
-          :day => @split_date[2],
-          :hour => @split_date[3]}
-      else
-        @split_date = {
-          :year => @split_date[0],
-          :month => @split_date[1],
-          :day => @split_date[2]}
-      end
-      @split_date
-    end
-
     def create_parser(date_field, parser_field, event_field)
       @new_parser = Parser.find_by_date_and_parser_type_and_event_type(
         date_field,
