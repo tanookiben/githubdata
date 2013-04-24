@@ -2,7 +2,6 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   
   def create_dataset(date_field)
-    puts "GOT HERE #{date_field}"
     @new_dataset = []
     if date_field[:hour]
       @new_dataset << "http://data.githubarchive.org/#{date_field[:year]}-#{date_field[:month]}-#{date_field[:day]}-#{date_field[:hour]}.json.gz"
