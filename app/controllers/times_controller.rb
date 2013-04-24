@@ -8,9 +8,11 @@ class TimesController < ApplicationController
     @query = "#{session[:date]}"
 
     skip_parse = false
-    if !Query.find_by_query(@query).nil?
+    if !Query.find_by_query_and_vis(@query,"times").nil?
       @lang_hours = retrieve_results(@query)
       skip_parse = true
+    else
+      Query.create(:query => @query, :vis => "times")
     end
 
     if !skip_parse
