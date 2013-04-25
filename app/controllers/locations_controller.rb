@@ -6,9 +6,9 @@ class LocationsController < ApplicationController
     # @cities, @cityCoords, @cityMappings = convert_coordinates()
     convert_coordinates
 
-    gon.cities = @cities
-    gon.cityCoords = @cityCoords
-    gon.cityMappings = @cityMappings
+    gon.cities = @cities.to_json
+    gon.cityCoords = @cityCoords.to_json
+    gon.cityMappings = @cityMappings.to_json
   end
 
   private
@@ -161,8 +161,8 @@ class LocationsController < ApplicationController
 
       # file = File.open("coordinates.txt", "r")
       @cities = Hash.new
-      @city_coords = Hash.new
-      @city_mappings = Hash.new
+      @cityCoords = Hash.new
+      @cityMappings = Hash.new
 
       create_locations
 
@@ -181,12 +181,12 @@ class LocationsController < ApplicationController
         # print "FROM LOCATION: ", from, " TO LOCATION: ", to, "\n\n"
         # print "FROM LOCATION NAME: ", from_name, " TO LOCATION NAME: ", to_name, "\n\n"
 
-        if @city_coords[from_name].nil? 
-          @city_coords[from_name] = from_coordinates
+        if @cityCoords[from_name].nil? 
+          @cityCoords[from_name] = from_coordinates
         end
 
-        if @city_coords[to_name].nil?
-          @city_coords[to_name] = to_coordinates
+        if @cityCoords[to_name].nil?
+          @cityCoords[to_name] = to_coordinates
         end
 
         if @cities[from_name].nil?
@@ -200,10 +200,10 @@ class LocationsController < ApplicationController
           @cities[to_name] = @cities[to_name] + 1
         end
         fromAndToCoordinates = [from_name, to_name]
-        if @city_mappings[fromAndToCoordinates].nil?
-          @city_mappings[fromAndToCoordinates] = 1
+        if @cityMappings[fromAndToCoordinates].nil?
+          @cityMappings[fromAndToCoordinates] = 1
         else
-          @city_mappings[fromAndToCoordinates] = @city_mappings[fromAndToCoordinates] + 1
+          @cityMappings[fromAndToCoordinates] = @cityMappings[fromAndToCoordinates] + 1
         end
       end
       # print "CITY JSON: ", cities.to_json, "\n"
