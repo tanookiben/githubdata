@@ -1,6 +1,43 @@
-%h1 Locations
+/ %h1 Times
 
-= init_skrollr
+= javascript_include_tag 'times'
+= stylesheet_link_tag 'times'
+
+.star#star1
+.star#star2
+.star#star3
+.star#star4
+.star#star5
+.star#star6
+.star#star7
+.star#star8
+.star#star9
+.star#star10
+.star#star11
+
+#window{ "data-0" => "background-color:rgb(8,29,47);",
+    "data-1200" => "background-color:rgb(58,166,208);",
+    "data-2300" => "background-color:rgb(8,29,47);" }
+
+#moon-am{ "data-0" => "left:50%;top:10%; background-color:rgb(255,255,255);",
+    "data-100" => "left:40%;top:10%;",
+    "data-200" => "left:30%;top:15%;",
+    "data-300" => "left:20%;top:20%;",
+    "data-400" => "left:10%;top:30%;",
+    "data-500" => "left:00%;top:40%;",
+    "data-600" => "left:-10%;top:70%;" }
+
+#sun{ "data-0" => "right:-100%; top:100%; background-color:rgb(25,25,0);",
+    "data-1200" => "right:50%; top:10%; background-color:rgb(255,206,20);",
+    "data-2300" => "right:95%; top:100%; background-color:rgb(8,29,47);" }
+
+#moon-pm{ "data-1700" => "left:100%;top:70%;",
+    "data-1800" => "left:100%;top:40%;",
+    "data-1900" => "left:90%;top:30%;",
+    "data-2000" => "left:80%;top:20%;",
+    "data-2100" => "left:70%;top:15%;",
+    "data-2200" => "left:60%;top:10%;",
+    "data-2300" => "left:50%;top:10%;" }
 
 .chart-row
 	- @languages.each do |lang|
@@ -8,26 +45,52 @@
 			#{lang}
 			.bar{ :id => "lang-bar",
 						"data-0" => "transform:scale(1,#{@lang_hours[0][lang]})",
-						"data-200" => "transform:scale(1,#{@lang_hours[1][lang]})",
-						"data-400" => "transform:scale(1,#{@lang_hours[2][lang]})",
-						"data-600" => "transform:scale(1,#{@lang_hours[3][lang]})",
-						"data-800" => "transform:scale(1,#{@lang_hours[4][lang]})",
-						"data-1000" => "transform:scale(1,#{@lang_hours[5][lang]})",
-						"data-1200" => "transform:scale(1,#{@lang_hours[6][lang]})",
-						"data-1400" => "transform:scale(1,#{@lang_hours[7][lang]})",
-						"data-1600" => "transform:scale(1,#{@lang_hours[8][lang]})",
-						"data-1800" => "transform:scale(1,#{@lang_hours[9][lang]})",
-						"data-2000" => "transform:scale(1,#{@lang_hours[10][lang]})",
-						"data-2200" => "transform:scale(1,#{@lang_hours[11][lang]})",
-						"data-2200" => "transform:scale(1,#{@lang_hours[12][lang]})",
-						"data-2400" => "transform:scale(1,#{@lang_hours[13][lang]})",
-						"data-2600" => "transform:scale(1,#{@lang_hours[14][lang]})",
-						"data-2800" => "transform:scale(1,#{@lang_hours[15][lang]})",
-						"data-3000" => "transform:scale(1,#{@lang_hours[16][lang]})",
-						"data-3200" => "transform:scale(1,#{@lang_hours[17][lang]})",
-						"data-3400" => "transform:scale(1,#{@lang_hours[18][lang]})",
-						"data-3600" => "transform:scale(1,#{@lang_hours[19][lang]})",
-						"data-3800" => "transform:scale(1,#{@lang_hours[20][lang]})",
-						"data-4000" => "transform:scale(1,#{@lang_hours[21][lang]})",
-						"data-4200" => "transform:scale(1,#{@lang_hours[22][lang]})",
-						"data-4400" => "transform:scale(1,#{@lang_hours[23][lang]})" }
+						"data-100" => "transform:scale(1,#{@lang_hours[1][lang]})",
+						"data-200" => "transform:scale(1,#{@lang_hours[2][lang]})",
+						"data-300" => "transform:scale(1,#{@lang_hours[3][lang]})",
+						"data-400" => "transform:scale(1,#{@lang_hours[4][lang]})",
+						"data-500" => "transform:scale(1,#{@lang_hours[5][lang]})",
+						"data-600" => "transform:scale(1,#{@lang_hours[6][lang]})",
+						"data-700" => "transform:scale(1,#{@lang_hours[7][lang]})",
+						"data-800" => "transform:scale(1,#{@lang_hours[8][lang]})",
+						"data-900" => "transform:scale(1,#{@lang_hours[9][lang]})",
+						"data-1000" => "transform:scale(1,#{@lang_hours[10][lang]})",
+						"data-1100" => "transform:scale(1,#{@lang_hours[11][lang]})",
+						"data-1200" => "transform:scale(1,#{@lang_hours[12][lang]})",
+						"data-1300" => "transform:scale(1,#{@lang_hours[13][lang]})",
+						"data-1400" => "transform:scale(1,#{@lang_hours[14][lang]})",
+						"data-1500" => "transform:scale(1,#{@lang_hours[15][lang]})",
+						"data-1600" => "transform:scale(1,#{@lang_hours[16][lang]})",
+						"data-1700" => "transform:scale(1,#{@lang_hours[17][lang]})",
+						"data-1800" => "transform:scale(1,#{@lang_hours[18][lang]})",
+						"data-1900" => "transform:scale(1,#{@lang_hours[19][lang]})",
+						"data-2000" => "transform:scale(1,#{@lang_hours[20][lang]})",
+						"data-2100" => "transform:scale(1,#{@lang_hours[21][lang]})",
+						"data-2200" => "transform:scale(1,#{@lang_hours[22][lang]})",
+						"data-2300" => "transform:scale(1,#{@lang_hours[23][lang]})" }
+
+/			.bar{ :id => "lang-bar",
+/						"data-0" => "transform:scale(1,#{@lang_hours[0][lang]})",
+/						"data-200" => "transform:scale(1,#{@lang_hours[1][lang]})",
+/						"data-400" => "transform:scale(1,#{@lang_hours[2][lang]})",
+/						"data-600" => "transform:scale(1,#{@lang_hours[3][lang]})",
+/						"data-800" => "transform:scale(1,#{@lang_hours[4][lang]})",
+/						"data-1000" => "transform:scale(1,#{@lang_hours[5][lang]})",
+/						"data-1200" => "transform:scale(1,#{@lang_hours[6][lang]})",
+/						"data-1400" => "transform:scale(1,#{@lang_hours[7][lang]})",
+/						"data-1600" => "transform:scale(1,#{@lang_hours[8][lang]})",
+/						"data-1800" => "transform:scale(1,#{@lang_hours[9][lang]})",
+/						"data-2000" => "transform:scale(1,#{@lang_hours[10][lang]})",
+/						"data-2200" => "transform:scale(1,#{@lang_hours[11][lang]})",
+/						"data-2200" => "transform:scale(1,#{@lang_hours[12][lang]})",
+/						"data-2400" => "transform:scale(1,#{@lang_hours[13][lang]})",
+/						"data-2600" => "transform:scale(1,#{@lang_hours[14][lang]})",
+/						"data-2800" => "transform:scale(1,#{@lang_hours[15][lang]})",
+/						"data-3000" => "transform:scale(1,#{@lang_hours[16][lang]})",
+/						"data-3200" => "transform:scale(1,#{@lang_hours[17][lang]})",
+/						"data-3400" => "transform:scale(1,#{@lang_hours[18][lang]})",
+/						"data-3600" => "transform:scale(1,#{@lang_hours[19][lang]})",
+/						"data-3800" => "transform:scale(1,#{@lang_hours[20][lang]})",
+/						"data-4000" => "transform:scale(1,#{@lang_hours[21][lang]})",
+/						"data-4200" => "transform:scale(1,#{@lang_hours[22][lang]})",
+/						"data-4400" => "transform:scale(1,#{@lang_hours[23][lang]})" }
