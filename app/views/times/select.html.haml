@@ -1,0 +1,14 @@
+%h1 Select Languages
+
+= check_selection
+
+%h1#warning
+
+= form_tag times_path, :class => "form-horizontal" do
+	.control-group
+		= label_tag "languages", "Select five languages", :class => "control-label"
+		.controls
+			= select_tag "languages", @select_languages.html_safe, :multiple => true, :size => @available_languages.length
+	.control-group
+		.controls
+			= submit_tag "Show", :class => "btn btn-warning"

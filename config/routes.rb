@@ -15,7 +15,9 @@ Githubdata::Application.routes.draw do
 
   match '/visualization', :to => 'pages#visualization', :as => 'visualization', :via => :post
 
-  match '/times', :to => 'times#show', :as => 'times'
+  match '/times', :to => 'times#show', :as => 'times', :via => :post
+  match '/times/select', :to => 'times#select', :as => 'select'
+
   match '/locations', :to => 'locations#show', :as => 'locations'
 
   # Sample resource route (maps HTTP verbs to controller actions automatically):

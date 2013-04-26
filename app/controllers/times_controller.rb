@@ -1,10 +1,9 @@
 class TimesController < ApplicationController
 
-  def show
+  def select
     start_method = Time.now
 
-  	@date = parse_date(session[:date])
-
+    @date = parse_date(session[:date])
     @query = "#{session[:date]}"
 
     skip_parse = false
@@ -12,86 +11,122 @@ class TimesController < ApplicationController
       @lang_hours = retrieve_results(@query)
       skip_parse = true
     else
-      Query.create(:query => @query, :vis => "times")
+      @query_obj = Query.new(:query => @query, :vis => "times")
     end
 
     if !skip_parse
       @dataset = create_dataset(@date)
 
-    	@push_event_count = 0
-    	@lang_hours = {}
+      @push_event_count = 0
+      @lang_hours = {}
 
-    	start_query = Time.now
+      start_query = Time.now
 
-    	require 'open-uri'
-    	require 'zlib'
-    	require 'yajl'
+      require 'open-uri'
+      require 'zlib'
+      require 'yajl'
 
-    	@dataset.each do |datafile|
-    		puts "Checking #{datafile}."
+      @dataset.each do |datafile|
+        puts "Checking #{datafile}."
 
-    		gz = open(datafile)
-    		js = Zlib::GzipReader.new(gz).read
+        gz = open(datafile)
+        js = Zlib::GzipReader.new(gz).read
 
-    		Yajl::Parser.parse(js) do |event|
-    			if event["type"] != "PushEvent"
-    				next
-    			else
-    				@push_event_count += 1
-    			end
+        Yajl::Parser.parse(js) do |event|
+          if event["type"] != "PushEvent"
+            next
+          else
+            @push_event_count += 1
+          end
 
-    			hour = DateTime.strptime(event["created_at"]).hour
+          hour = DateTime.strptime(event["created_at"]).hour
 
-    			if event["repository"].nil? || event["repository"].empty?
-    				next
-    			end
+          if event["repository"].nil? || event["repository"].empty?
+            next
+          end
 
-    			lang = event["repository"]["language"]
+          lang = event["repository"]["language"]
 
-    			if lang.nil? || lang == ""
-    				next
-    			end
+          if lang.nil? || lang == ""
+            next
+          end
 
-    			if @lang_hours[hour].nil?
-    				@lang_hours[hour] = {lang => 1}
-    			else
-    				if @lang_hours[hour][lang].nil?
-    					@lang_hours[hour][lang] = 0
-    				end
-    				@lang_hours[hour][lang] += 1
-    			end
-    		end
-    	end
+          if @lang_hours[hour].nil?
+            @lang_hours[hour] = {lang => 1}
+          else
+            if @lang_hours[hour][lang].nil?
+              @lang_hours[hour][lang] = 0
+            end
+            @lang_hours[hour][lang] += 1
+          end
+        end
+      end
 
       @date = generate_date(@date)
 
-    	@lang_hours.each do |hour, lang_hash|
-    		lang_hash.each do |lang, cnt|
-    			Results.create(:date => @date, :language => lang, :count => cnt, :hour => hour, :query => @query)
-    		end
-    	end
+      @lang_hours.each do |hour, lang_hash|
+        lang_hash.each do |lang, cnt|
+          Results.create(:date => @date, :language => lang, :count => cnt, :hour => hour, :query => @query)
+        end
+      end
 
       finish_query = Time.now
-      puts "Languages by hour took #{finish_query-start_query} seconds for #{@push_event_count} events."
+      puts "query took #{finish_query-start_query} seconds for #{@push_event_count} events."
     end
 
+    if @lang_hours.keys.length == 24 && !skip_parse
+      @query_obj.save
+    end
+
+    @lang_hours, @available_languages = filter_values(@lang_hours,50) # only keep languages with counts > 100 for all hrs in @lang_hours with available data
+
+    @available_languages = @available_languages.keys
+    @select_languages = ""
+    @available_languages.each do |lang|
+      @select_languages << "<option>" << lang << "</option>"
+    end
+
+    session[:query] = @query
+
+    finish_method = Time.now
+    if Rails.env.development?
+      puts "times#select took #{finish_method-start_method} seconds"
+    end
+  end
+
+  def show
+    start_method = Time.now
+
+    @query = session[:query]
+    @lang_hours = retrieve_results(@query)
+
     # @lang_hours = filter_count(@lang_hours, 100)
-    @languages = ["Ruby"] #, "Java", "C", "PHP", "Python"]
+    @languages = params[:languages] #, "Java", "C", "PHP", "Python"]
     @lang_hours = filter_languages(@lang_hours, @languages)
 
     @lang_hours = normalize_values(@lang_hours)
     # @unique_languages = count_languages(@lang_hours)
 
     finish_method = Time.now
-    puts "Parsing took #{finish_method-start_method} seconds to parse events."
+    if Rails.env.development?
+      puts "times#show took #{finish_method-start_method} seconds"
+    end
   end
 
   private
-    def filter_values(results, bound) # Keep languages with number of events greater than input bound
+    def filter_values(results, bound) # Keep languages with number of events greater than input bound and with 24 hrs of data
+      languages = Hash.new(0)
       results.each do |hour, lang_hash|
-        lang_hash.keep_if { |lang, cnt| cnt > bound }
+        lang_hash.keep_if { |lang, cnt| cnt > bound } # bound check
+        lang_hash.keys.each do |lang|
+          languages[lang] += 1
+        end
       end
-      results
+      results.each do |hour, lang_hash|
+        lang_hash.keep_if { |lang, cnt| languages[lang] == 24 } # 24 hr check
+      end
+      languages.keep_if { |lang, hr_cnt| hr_cnt == 24 }
+      return results, languages
     end
 
     def filter_languages(results, languages) # Keep languages specified by an array of allowed languages
@@ -111,7 +146,9 @@ class TimesController < ApplicationController
             end
           end
         end
-        puts "Lang #{sel_lang} max is #{lang_max}."
+        if Rails.env.development?
+          puts "Lang #{sel_lang} max is #{lang_max}."
+        end
         results.each do |hour, lang_hash|
           lang_hash.each do |lang, cnt|
             if lang == sel_lang

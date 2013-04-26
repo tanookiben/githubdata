@@ -5,7 +5,7 @@ class PagesController < ApplicationController
   def visualization
     session[:date] = params[:date]
     if params[:visualization] == "times"
-      redirect_to times_path
+      redirect_to select_path
     elsif params[:visualization] == "locations"
       redirect_to locations_path
     end
