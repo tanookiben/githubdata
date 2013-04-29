@@ -42,9 +42,14 @@
     height: 200px;
 }
 
-.chart-row {
+.wrapped {
     position: fixed;
-    height: 250px;
-    left: 30%;
+    width: 100%;
     bottom: 1%;
+}
+
+.chart-row {
+    height: 250px;
+    max-width: 500px;
+    margin: 0 auto;
 }

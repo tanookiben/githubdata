@@ -11,6 +11,7 @@ gem 'yajl-ruby'
 gem 'geocoder'
 gem 'octokit'
 gem 'gon'
+gem 'whenever', :require => false
 
 group :test, :development do
 	gem 'sqlite3'

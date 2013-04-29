@@ -1,10 +1,9 @@
 class TimesController < ApplicationController
-
   def select
     start_method = Time.now
 
-    @date = parse_date(session[:date])
-    @query = "#{session[:date]}"
+    @date = parse_date(params[:date])
+    @query = "#{params[:date]}"
 
     skip_parse = false
     if !Query.find_by_query_and_vis(@query,"times").nil?
