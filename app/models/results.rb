@@ -2,12 +2,15 @@ class Results < ActiveRecord::Base
   attr_accessible :count, :date, :hour, :language, :query
 
   def self.update_results
-    now = DateTime.now
-    ago = DateTime.now - 10.days
-    today = "#{now.month < 10 ? 0.to_s+now.month.to_s : now.month.to_s}-#{now.day < 10 ? 0.to_s+now.day.to_s : now.day.to_s}-#{now.year.to_s}"
-    past = "#{ago.month < 10 ? 0.to_s+ago.month.to_s : ago.month.to_s}-#{ago.day < 10 ? 0.to_s+ago.day.to_s : ago.day.to_s}-#{ago.year.to_s}"
+    puts "starting update_results"
+    start = Time.now
 
-    Results.find_by_query(past).each do |old_query|
+    now = DateTime.now - 1.day
+    ago = DateTime.now - 10.days
+    today = "#{now.year.to_s}-#{now.month < 10 ? 0.to_s+now.month.to_s : now.month.to_s}-#{now.day < 10 ? 0.to_s+now.day.to_s : now.day.to_s}"
+    past = "#{ago.year.to_s}-#{ago.month < 10 ? 0.to_s+ago.month.to_s : ago.month.to_s}-#{ago.day < 10 ? 0.to_s+ago.day.to_s : ago.day.to_s}"
+
+    Results.find_all_by_query(past).each do |old_query|
     	old_query.destroy
     end
 
@@ -16,8 +19,13 @@ class Results < ActiveRecord::Base
     require 'yajl'
 
     @query = today
+    @date = Results.parse_date(today)
+    @dataset = create_dataset(@date)
+
+    @lang_hours = {}
 
     @dataset.each do |datafile|
+        puts "checking #{datafile}"
     	gz = open(datafile)
     	js = Zlib::GzipReader.new(gz).read
 
@@ -26,7 +34,7 @@ class Results < ActiveRecord::Base
     			next
     		end
 
-    		hour = DateTime.striptime(event["created_at"]).hour
+    		hour = DateTime.strptime(event["created_at"]).hour
 
     		if event["repository"].nil? || event["repository"].empty?
     			next
@@ -56,6 +64,12 @@ class Results < ActiveRecord::Base
     		Results.create(:date => @date, :language => lang, :count => cnt, :hour => hour, :query => @query)
     	end
     end
+
+    Query.create(:query => @query, :vis => "times")
+
+    finish = Time.now
+    puts "finishing update_results"
+    puts "update_results took #{finish - start} seconds"
   end
 
   def self.generate_date(date_hash)
@@ -65,5 +79,34 @@ class Results < ActiveRecord::Base
       @gen_date = "#{date_hash[:year]}-#{date_hash[:month]}-#{date_hash[:day]}"
     end
     @gen_date
+  end
+
+  def self.create_dataset(date)
+    @new_dataset = []
+    if date[:hour]
+      @new_dataset << "http://data.githubarchive.org/#{date[:year]}-#{date[:month]}-#{date[:day]}-#{date[:hour]}.json.gz"
+    elsif date[:day]
+      (0..23).each do |hour|
+        @new_dataset << "http://data.githubarchive.org/#{date[:year]}-#{date[:month]}-#{date[:day]}-#{hour}.json.gz"
+      end
+    end
+    @new_dataset
+  end
+
+  def self.parse_date(date_field)
+    @split_date = date_field.split('-')
+    if @split_date.length == 4
+      @split_date = {
+        :year => @split_date[0],
+        :month => @split_date[1],
+        :day => @split_date[2],
+        :hour => @split_date[3]}
+    else
+      @split_date = {
+        :year => @split_date[0],
+        :month => @split_date[1],
+        :day => @split_date[2]}
+    end
+    @split_date
   end
 end

@@ -13,6 +13,8 @@ class PagesController < ApplicationController
 
   def demo
     # Skrollr demo - ignore
-    @data = {}
+    # @data = {}
+    Results.update_results
+    redirect_to root_path
   end
 end
