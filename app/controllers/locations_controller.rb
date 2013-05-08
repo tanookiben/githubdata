@@ -236,7 +236,7 @@ class LocationsController < ApplicationController
       if Rails.env.development?
         @client = Octokit::Client.new(:login => USERNAME, :password => PASSWORD)
       else
-        @client = Octokit::Client.new(:login => ENV["USERNAME"], :password => ENV["PASSWORD"]])
+        @client = Octokit::Client.new(:login => ENV["USERNAME"], :password => ENV["PASSWORD"])
       end
     end
 
