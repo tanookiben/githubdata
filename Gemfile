@@ -11,6 +11,7 @@ gem 'yajl-ruby'
 gem 'geocoder'
 gem 'octokit'
 gem 'gon'
+gem 'unicorn'
 
 group :test, :development do
 	gem 'sqlite3'
