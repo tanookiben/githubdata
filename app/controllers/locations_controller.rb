@@ -2,7 +2,6 @@ class LocationsController < ApplicationController
 
   def show
   	@date = parse_date(session[:date])
-
     # @cities, @cityCoords, @cityMappings = convert_coordinates()
     convert_coordinates
 
@@ -237,7 +236,7 @@ class LocationsController < ApplicationController
       if Rails.env.development?
         @client = Octokit::Client.new(:login => USERNAME, :password => PASSWORD)
       else
-        @client = Octokit::Client.new(:login => ENV["USERNAME", :password => ENV["PASSWORD"]])
+        @client = Octokit::Client.new(:login => ENV["USERNAME"], :password => ENV["PASSWORD"]])
       end
     end
 
